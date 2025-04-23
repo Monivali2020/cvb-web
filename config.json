@@ -1,0 +1,12 @@
+{
+    "bot_name": "CryptoValBot",
+    "language": "en",
+    "version": "0.5",
+    "features": {
+      "moderation": true,
+      "crypto": true,
+      "ai_chat": true,
+      "payments": true,
+      "web_dashboard": false
+    }
+  }

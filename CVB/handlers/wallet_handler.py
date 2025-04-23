@@ -1,0 +1,57 @@
+from aiogram import Router, types
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.filters import Command
+from CVB.models.wallet_model import get_or_create_wallet
+from CVB.utils.paystack import create_invoice as create_paystack_invoice
+from CVB.utils.nowpayment import create_invoice as create_nowpayments_invoice
+from CVB.utils.flutterwave import create_invoice as create_flutterwave_invoice  # Added
+
+router = Router()
+
+@router.message(commands=["wallet"])
+async def wallet_handler(message: types.Message):
+    user_id = message.from_user.id
+    wallet = get_or_create_wallet(user_id)
+    balance = wallet["balance"]
+
+    # Create payment links
+    paystack_link = None
+    nowpayments_link = None
+    flutterwave_link = None
+
+    try:
+        paystack_res = create_paystack_invoice(5000, email=str(user_id))
+        paystack_link = paystack_res.get("data", {}).get("authorization_url")
+    except Exception as e:
+        print(f"Paystack error: {e}")
+
+    try:
+        now_res = create_nowpayments_invoice(user_id, 10.0)
+        nowpayments_link = now_res.get("invoice_url")
+    except Exception as e:
+        print(f"NOWPayments error: {e}")
+
+    try:
+        flutter_res = create_flutterwave_invoice(5000, user_id)
+        flutterwave_link = flutter_res.get("data", {}).get("link")
+    except Exception as e:
+        print(f"Flutterwave error: {e}")
+
+    # Construct inline keyboard
+    buttons = []
+    if paystack_link:
+        buttons.append([InlineKeyboardButton(text="Deposit (NGN) via Paystack", url=paystack_link)])
+    if flutterwave_link:
+        buttons.append([InlineKeyboardButton(text="Deposit (NGN) via Flutterwave", url=flutterwave_link)])
+    if nowpayments_link:
+        buttons.append([InlineKeyboardButton(text="Deposit (USDT) via NOWPayments", url=nowpayments_link)])
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons) if buttons else None
+
+    text = f"**Wallet Overview**\n\nBalance: `${balance:.2f}` USD"
+
+    await message.answer(
+        text,
+        reply_markup=keyboard,
+        parse_mode="Markdown"
+    )
