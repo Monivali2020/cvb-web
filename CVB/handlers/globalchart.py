@@ -1,3 +1,5 @@
+#handlers/globalchart.py
+
 import logging
 import json
 import urllib.parse
@@ -46,7 +48,7 @@ async def global_chart_handler(message: Message):
         }
     }
 
-    # 4) JSON-dump & percent-encode
+    # 4) JSON-dump & encode
     raw     = json.dumps(chart_config)
     encoded = urllib.parse.quote_plus(raw)
     chart_url = (
@@ -60,10 +62,9 @@ async def global_chart_handler(message: Message):
     if chart_url.startswith("http://"):
         chart_url = chart_url.replace("http://", "https://", 1)
 
-    # 6) log for debugging
     logger.info("QuickChart Global URL → %s", chart_url)
 
-    # 7) send the chart directly
+    # 6) send the chart
     await message.reply_photo(
         photo=chart_url,
         caption="📊 7-Day BTC vs ETH (USD)",

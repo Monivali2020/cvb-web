@@ -1,3 +1,5 @@
+# CVB/core/app_instance.py
+
 from pyrogram import Client
 from CVB.config import API_ID, API_HASH, BOT_TOKEN
 

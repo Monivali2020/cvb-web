@@ -1,3 +1,5 @@
+# CVB/handlers/moderation.py
+
 from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import Command
@@ -11,4 +13,7 @@ async def ping_handler(message: Message):
 @router.message(Command("id"))
 async def id_handler(message: Message):
     user = message.from_user
-    await message.reply(f"👤 Your Telegram ID: <code>{user.id}</code>", parse_mode="HTML")
+    await message.reply(
+        f"👤 Your Telegram ID: <code>{user.id}</code>",
+        parse_mode="HTML"
+    )

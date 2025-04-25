@@ -4,12 +4,29 @@ from aiogram.filters import Command
 from CVB.models.wallet_model import get_or_create_wallet
 from CVB.utils.paystack import create_invoice as create_paystack_invoice
 from CVB.utils.nowpayment import create_invoice as create_nowpayments_invoice
-from CVB.utils.flutterwave import create_invoice as create_flutterwave_invoice  # Added
+from CVB.utils.flutterwave import create_invoice as create_flutterwave_invoice
+from CVB.config import MONGO_URL
+from motor.motor_asyncio import AsyncIOMotorClient
 
 router = Router()
 
-@router.message(commands=["wallet"])
+# Setup MongoDB to check clean command setting
+mongo_client = AsyncIOMotorClient(MONGO_URL)
+db = mongo_client.CVB
+clean_settings = db.clean_commands
+
+async def is_clean_enabled(chat_id: int) -> bool:
+    doc = await clean_settings.find_one({"chat_id": chat_id})
+    return bool(doc and doc.get("enabled", False))
+
+@router.message(Command("wallet"))
 async def wallet_handler(message: types.Message):
+    if await is_clean_enabled(message.chat.id):
+        try:
+            await message.delete()
+        except:
+            pass
+
     user_id = message.from_user.id
     wallet = get_or_create_wallet(user_id)
     balance = wallet["balance"]

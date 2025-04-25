@@ -1,3 +1,5 @@
+# CVB/handlers/ethtrend.py
+
 import logging
 import json
 import urllib.parse
@@ -68,5 +70,6 @@ async def eth_chart_handler(message: Message):
     # 7) send the chart directly
     await message.reply_photo(
         photo=chart_url,
-        caption="📈 7-day ETH price trend (USD)"
+        caption="📈 7-day ETH price trend (USD)",
+        parse_mode="HTML"
     )

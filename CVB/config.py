@@ -45,3 +45,8 @@ LOG_CHANNEL_ID      = os.getenv("LOG_CHANNEL_ID")
 ADMIN_IDS           = os.getenv("ADMIN_IDS", "").split(",")
 CVB_PINKSALE_LINK   = os.getenv("CVB_PINKSALE_LINK")
 BOT_START_TIME      = os.getenv("BOT_START_TIME")  # or set dynamically
+
+# === WEBHOOK URLS ===
+FLUTTERWAVE_WEBHOOK_URL = f"{BASE_URL}/webhook/flutterwave"
+PAYSTACK_WEBHOOK_URL = f"{BASE_URL}/webhook/paystack"
+NOWPAYMENTS_WEBHOOK_URL = f"{BASE_URL}/webhook/nowpayments"

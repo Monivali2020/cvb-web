@@ -1,15 +1,18 @@
-from aiogram import Router, F
+# CVB/handlers/fun_handler.py
+
+from aiogram import Router
 from aiogram.types import Message
+from aiogram.filters import Command
 import random
 
 router = Router()
 
 JOKES = [
-    "Why don’t crypto traders tell secrets on elevators? Too many whales.",
-    "I tried mining crypto once... now my laptop sounds like a jet engine.",
-    "HODL like your life depends on it!"
+    "Why did Bitcoin break up with the dollar? Too volatile!",
+    "My wallet told me a joke… but it had no funds.",
+    "Why do crypto traders never get lost? Because they follow the charts!"
 ]
 
-@router.message(F.command("joke"))
-async def send_joke(message: Message):
+@router.message(Command("joke"))
+async def joke_handler(message: Message):
     await message.reply(random.choice(JOKES))

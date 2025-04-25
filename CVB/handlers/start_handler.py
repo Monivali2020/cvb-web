@@ -1,6 +1,6 @@
 # CVB/handlers/start_handler.py
 
-from aiogram import Router, F
+from aiogram import Router
 from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters import CommandStart
 import os

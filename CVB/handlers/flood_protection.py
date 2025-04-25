@@ -1,17 +1,14 @@
-# CVB/handlers/fun_handler.py
-from aiogram import Router
+# CVB/handlers/flood_handler.py
+
+from aiogram import Router, F
 from aiogram.types import Message
-from aiogram.filters import Command
-import random
 
 router = Router()
 
-JOKES = [
-    "Why did Bitcoin break up with the dollar? Too volatile!",
-    "My wallet told me a joke… but it had no funds.",
-    "Why do crypto traders never get lost? Because they follow the charts!"
-]
-
-@router.message(Command("joke"))
-async def joke_handler(message: Message):
-    await message.reply(random.choice(JOKES))
+# Example flood protection: delete messages with too many caps
+@router.message(F.text.matches(r'^[^a-z]*$'))  # all-caps messages
+async def delete_all_caps(message: Message):
+    try:
+        await message.delete()
+    except:
+        pass  # missing permissions? ignore

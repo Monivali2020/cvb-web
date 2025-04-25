@@ -1,3 +1,5 @@
+#handler/btcprice.py
+
 import logging
 import json
 import urllib.parse
@@ -68,5 +70,6 @@ async def btc_chart_handler(message: Message):
     # 7) send the chart directly
     await message.reply_photo(
         photo=chart_url,
-        caption="📈 7-day BTC price trend (USD)"
+        caption="📈 7-day BTC price trend (USD)",
+        parse_mode="HTML"
     )

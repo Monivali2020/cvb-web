@@ -1,8 +1,9 @@
 # CVB/handlers/raid_handler.py
 
 from aiogram import Router
-from aiogram.types import Message
+from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters import Command
+from ..config import CVB_PINKSALE_LINK
 
 router = Router()
 
@@ -17,7 +18,14 @@ async def raid_handler(message: Message):
         "3. Spam during peak hours\n"
         "4. Tag admins to boost visibility\n\n"
         "**Presale Link:**\n"
-        "[Click here to view on PinkSale]({CVB_PINKSALE_LINK})\n\n"
+        f"[Click here to view on PinkSale]({CVB_PINKSALE_LINK})\n\n"
         "_This feature will support automated raid scheduling in future updates._"
+    )
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton("Open PinkSale", url=CVB_PINKSALE_LINK)
+            ]
+        ]
     )
     await message.reply(raid_text, parse_mode="Markdown", disable_web_page_preview=True)
