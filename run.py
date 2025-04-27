@@ -50,7 +50,7 @@ async def webhook_handler(request: web.Request):
     update = await request.json()
     from aiogram import types
     Update = types.Update.parse_obj(update)
-    await dp.process_update(Update)
+    await dp._process_update(Update)  # Changed process_update to _process_update
     return web.Response(status=200)
 
 async def main():
