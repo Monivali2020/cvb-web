@@ -11,7 +11,6 @@ router = Router()
 print(f"BOT_USERNAME: {os.getenv('BOT_USERNAME')}")
 print(f"BASE_URL: {os.getenv('BASE_URL')}")
 print(f"CVB_PINKSALE_LINK: {os.getenv('CVB_PINKSALE_LINK')}")
-keyboard = InlineKeyboardMarkup(...)
 
 @router.message(Command("help", ignore_case=True))
 async def help_command(message: Message):
@@ -33,28 +32,27 @@ async def help_command(message: Message):
         f"{code('/uptime')} – Bot uptime\n"
     )
 
-    keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="Add to Group",
-                    url=f"https://t.me/{os.getenv('BOT_USERNAME')}?startgroup=true"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text="Dashboard",
-                    url=os.getenv("BASE_URL")
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text="PinkSale",
-                    url=os.getenv("CVB_PINKSALE_LINK")
-                )
-            ],
-        ]
-    )
+    inline_keyboard = [
+        [
+            InlineKeyboardButton(
+                text="Add to Group",
+                url=f"https://t.me/{os.getenv('BOT_USERNAME')}?startgroup=true"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="Dashboard",
+                url=os.getenv("BASE_URL")
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="PinkSale",
+                url=os.getenv("CVB_PINKSALE_LINK")
+            )
+        ],
+    ]
+    keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
     await message.answer(
         help_text,
