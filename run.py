@@ -56,15 +56,14 @@ async def main():
     dp.startup.register(on_startup)
 
     app = web.Application()
-    app.add_routes([web.post("/webhook", webhook_handler)]) # Changed the route here
+    app.add_routes([web.post("/webhook", webhook_handler)])
 
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(runner, WEBAPP_HOST, WEBAPP_PORT)
     await site.start()
     log.info(f"Webhook app started on http://{WEBAPP_HOST}:{WEBAPP_PORT}{WEBHOOK_PATH}")
-    while True:
-        await asyncio.sleep(3600)
+    await asyncio.sleep(3600) # Keep the server running
 
 if __name__ == "__main__":
     try:
