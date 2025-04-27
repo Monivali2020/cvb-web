@@ -8,6 +8,11 @@ from aiogram.utils.markdown import bold, code
 
 router = Router()
 
+print(f"BOT_USERNAME: {os.getenv('BOT_USERNAME')}")
+print(f"BASE_URL: {os.getenv('BASE_URL')}")
+print(f"CVB_PINKSALE_LINK: {os.getenv('CVB_PINKSALE_LINK')}")
+keyboard = InlineKeyboardMarkup(...)
+
 @router.message(Command("help", ignore_case=True))
 async def help_command(message: Message):
     help_text = (
