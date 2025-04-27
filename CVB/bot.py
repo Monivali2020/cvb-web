@@ -49,24 +49,13 @@ from .handlers import main_router
 
 dp.include_router(main_router)
 
-# === Start Bot Function ===
+# === Start Bot Function (Now using polling) ===
 async def main():
-    logger.info("Starting CryptoValBot...")
+    logger.info("Starting CryptoValBot using polling...")
 
-    # Delete old webhook (important when redeploying)
-    await bot.delete_webhook(drop_pending_updates=True)
+    # No webhook deletion needed for polling
 
-    # Set new webhook
-    from CVB.flask_app import app
-    webhook_url = os.getenv("WEBHOOK_URL", "")
-    
-    if webhook_url:
-        await bot.set_webhook(url=webhook_url)
-        logger.info(f"Webhook set to {webhook_url}")
-    else:
-        logger.error("WEBHOOK_URL not set in environment!")
-
-    # No polling anymore
+    await dp.start_polling(bot)  # Start polling to receive updates
 
 # === Entrypoint ===
 if __name__ == "__main__":
