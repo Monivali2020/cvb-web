@@ -46,11 +46,10 @@ async def on_startup(bot: Bot, dispatcher: Dispatcher):
 
 async def webhook_handler(request: web.Request):
     token = bot.token
-    # No need to check the token in the path anymore
     update = await request.json()
     from aiogram import types
     Update = types.Update.parse_obj(update)
-    await dp._process_update(Update)  # Changed process_update to _process_update
+    await dp._process_update(bot, Update)  # Pass the bot instance here
     return web.Response(status=200)
 
 async def main():
