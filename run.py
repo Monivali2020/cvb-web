@@ -28,40 +28,42 @@ dp.include_router(main_router)
 
 async def on_startup(bot: Bot, dispatcher: Dispatcher):
     global WEBHOOK_URL
-    log.info(f"WEBHOOK_HOST from env: {WEBHOOK_HOST}")
-    log.info(f"Webhook URL being set: {WEBHOOK_URL}")
-    await bot.set_webhook(url=WEBHOOK_URL)
-    webhook_info = await bot.get_webhook_info()
-    if webhook_info.url == WEBHOOK_URL:
-        log.info("Webhook set successfully!")
-    else:
-        log.error(f"Webhook was not set correctly. Current URL: {webhook_info.url}")
+    webhook_host = os.getenv("WEBHOOK_HOST")
+    webhook_path = "/webhook"
+    WEBHOOK_URL = f"https://{webhook_host}{webhook_path}"
+    log.info(f"Environment variable WEBHOOK_HOST: '{webhook_host}'")
+    log.info(f"Constructed WEBHOOK_URL: '{WEBHOOK_URL}'")
+    try:
+        await bot.set_webhook(url=WEBHOOK_URL)
+        webhook_info = await bot.get_webhook_info()
+        log.info(f"Webhook info after setting: {webhook_info.json()}")
+        if webhook_info.url == WEBHOOK_URL:
+            log.info("Webhook set successfully!")
+        else:
+            log.error(f"Webhook was not set correctly. Current URL: {webhook_info.url}")
+    except Exception as e:
+        log.error(f"Error setting webhook: {e}")
 
 async def webhook_handler(request: web.Request):
     token = bot.token
-    if request.match_info.get("bot_token") == token:
-        update = await request.json()
-        from aiogram import types
-        Update = types.Update.parse_obj(update)
-        await dp.process_update(Update)
-        return web.Response(status=200)
-    else:
-        return web.Response(status=403)
+    # No need to check the token in the path anymore
+    update = await request.json()
+    from aiogram import types
+    Update = types.Update.parse_obj(update)
+    await dp.process_update(Update)
+    return web.Response(status=200)
 
 async def main():
     dp.startup.register(on_startup)
-    # dp.shutdown.register(on_shutdown) # If you have a shutdown function
 
     app = web.Application()
-    app.add_routes([web.post(f"/bot{{bot_token}}", webhook_handler)])
+    app.add_routes([web.post("/webhook", webhook_handler)]) # Changed the route here
 
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(runner, WEBAPP_HOST, WEBAPP_PORT)
     await site.start()
     log.info(f"Webhook app started on http://{WEBAPP_HOST}:{WEBAPP_PORT}{WEBHOOK_PATH}")
-
-    # Keep the server running
     while True:
         await asyncio.sleep(3600)
 
