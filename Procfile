@@ -1,1 +1,1 @@
-web: gunicorn web.app:app
+web: gunicorn CVB.flask_app:app --bind 0.0.0.0:8080
