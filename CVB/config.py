@@ -45,6 +45,7 @@ LOG_CHANNEL_ID      = os.getenv("LOG_CHANNEL_ID")
 ADMIN_IDS           = os.getenv("ADMIN_IDS", "").split(",")
 CVB_PINKSALE_LINK   = os.getenv("CVB_PINKSALE_LINK")
 BOT_START_TIME      = os.getenv("BOT_START_TIME")  # or set dynamically
+PORT                = int(os.getenv("PORT", 5051))  # defaults to 5001 if PORT isn't in .env
 
 # === WEBHOOK URLS ===
 FLUTTERWAVE_WEBHOOK_URL = f"{BASE_URL}/webhook/flutterwave"

@@ -1,16 +1,14 @@
 import asyncio
 import logging
 import os
+from datetime import datetime
+
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import load_dotenv
-from datetime import datetime
 from pymongo import MongoClient
-import os
-
-mongo_client = MongoClient(os.getenv("MONGO_URL"))
-mongo_db = mongo_client.get_default_database()
+from aiogram.client.default import DefaultBotProperties
 
 # Load .env values
 load_dotenv()
@@ -20,7 +18,13 @@ BOT_TOKEN = os.getenv("CVB_TELE_API")
 API_ID = os.getenv("API_ID")
 API_HASH = os.getenv("API_HASH")
 LOG_CHANNEL_ID = os.getenv("LOG_CHANNEL_ID")
-ADMIN_IDS = os.getenv("ADMIN_IDS", "").split(",")  # Comma-separated admin list
+ADMIN_IDS = os.getenv("ADMIN_IDS", "").split(",")
+
+# === AI INTEGRATIONS ===
+GEMINI_API_KEY = os.getenv("CVB_GAPI")
+OPENROUTER_API_KEY = os.getenv("CVBAI")
+HUGGINGFACE_API_KEY = os.getenv("HCVBHFAI")
+META_AI_API_KEY = os.getenv("MAIK")
 
 # === Optional: For tracking uptime ===
 BOT_START_TIME = datetime.utcnow()
@@ -29,31 +33,40 @@ BOT_START_TIME = datetime.utcnow()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# === Initialize Bot and Dispatcher ===
-from aiogram.client.default import DefaultBotProperties
+# === Initialize MongoDB ===
+mongo_client = MongoClient(os.getenv("MONGO_URL"))
+mongo_db = mongo_client.get_default_database()
 
+# === Initialize Bot and Dispatcher ===
 bot = Bot(
     token=BOT_TOKEN,
     default=DefaultBotProperties(parse_mode=ParseMode.HTML)
 )
 dp = Dispatcher(storage=MemoryStorage())
 
-from CVB.core.app_instance import app
-
 # === Import Main Routers ===
 from .handlers import main_router
 
 dp.include_router(main_router)
 
-# === Optional Middlewares or Filters ===
-# from CVB.middlewares.logging_middleware import setup_logging
-# setup_logging(dp)
-
 # === Start Bot Function ===
 async def main():
     logger.info("Starting CryptoValBot...")
+
+    # Delete old webhook (important when redeploying)
     await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(bot)
+
+    # Set new webhook
+    from CVB.flask_app import app
+    webhook_url = os.getenv("WEBHOOK_URL", "")
+    
+    if webhook_url:
+        await bot.set_webhook(url=webhook_url)
+        logger.info(f"Webhook set to {webhook_url}")
+    else:
+        logger.error("WEBHOOK_URL not set in environment!")
+
+    # No polling anymore
 
 # === Entrypoint ===
 if __name__ == "__main__":

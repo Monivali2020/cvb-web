@@ -1,4 +1,5 @@
 # CVB/models/group_settings.py
+
 from .wallet_model import db
 
 def get_clean_mode(chat_id: int) -> bool:
